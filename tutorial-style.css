@@ -1,0 +1,77 @@
+figure {
+    margin: auto;
+    max-width: 70%;
+    padding: 5px;
+}
+
+figcaption {}
+
+em {
+    font-weight: var(--fw-bold);
+    color: var(--clr-neutral-900);
+}
+
+pre {
+    overflow: hidden;
+    background-color: var(--clr-pre-element);
+    margin: 0 var(--fs-700);
+}
+
+
+/* Leipäteksti */
+DIV.tutorial-text P {
+    margin-top: var(--size-200);
+    margin-bottom: var(--size-200);
+    opacity: 1;
+}
+
+DIV.tutorial-text UL {
+    padding: var(--size-400);
+}
+
+
+.hide-on-mobile {
+    display: none;
+}
+
+.display-on-mobile {
+    display: block;
+}
+
+.border-bottom {
+    border-bottom: 1px dotted var(--clr-accent-300);
+}
+
+
+@media (min-width: 50em){
+
+    .hide-on-mobile {
+        display: block;
+    }
+
+    .display-on-mobile {
+        display: none;
+    }
+
+    .margin-and-column {
+        grid-template-columns: 25% 75%;
+    }
+
+    figure {
+        margin: auto;
+        max-width: 75%;
+        padding: 5px;
+    }
+    
+}
+
+.notes_link {
+    background: none!important;
+    border: none;
+    padding: 0!important;
+    /* background-color: var(--clr-primary-400); */
+    color: var(--clr-primary-400);
+    font-weight: var(--fw-bold);
+    text-decoration: underline;
+    cursor: pointer;
+}

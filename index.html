@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Laravel projektin päivitys GitHub actionsin avulla</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="./style.css" rel="stylesheet"/>
+    <link href="./tutorial-style.css" rel="stylesheet"/>
+    <link href="./modal-style.css" rel="stylesheet"/>
+    <link href="./text-modal-style.css" rel="stylesheet"/>
+  </head>
+  <body>
+
+
+
+    <header class="primary-header">
+      <div class="container">
+
+        <div class="nav-wrapper">
+
+          <a href="#">
+            <svg class="logo">
+              <use xlink:href="./images/sitelogo-sprite.svg#sitelogo"></use>
+            </svg>
+          </a>
+          
+          <!--
+          <button class="mobile-nav-toggle" aria-expanded="false" aria-controls="primary-navigation">
+            <span class="visually-hidden">Menu</span>
+          </button>
+
+          <nav class="primary-navigation">
+            <ul aria-label="Primary" role="list" class="nav-list"  id="primary-navigation">
+              <li><a href="#">Github cPanel</a></li>
+              <li><a href="./laravel-github-cpanel.html">Laravel Github cPanel</a></li>
+            </ul>
+          </nav>
+
+          <button class="button display-sm-none display-md-inline-flex">Get Started</button>
+
+        -->
+
+        </div>
+
+      </div>
+    </header>
+
+
+
+    <main>
+
+      <section class="padding-block-200 border-bottom">
+        <div class="container tutorial-text">
+
+          <!-- The Modal -->
+          <div id="laravel-github-cpanel-page-modal" class="modal">
+
+              <!-- The Close Button -->
+              <span class="close">&times;</span>
+          
+              <!-- Modal Content (The Image) -->
+              <img class="modal-content" id="laravel-github-cpanel-page-modal-img">
+          
+              <!-- Modal Caption (Image Text) -->
+              <div id="caption"></div>
+          </div>
+
+          <p id="top_of_the_page">
+              Tässä oppaassa kerrotaan kuinka saadaan määritettyä ketju, jonka avulla <a href="https://github.com/features/actions" target="_blank">Github-actionsia</a> käyttäen voidaan kotikoneelta ylläpitää Webhotellissa toimivaa Laravel-sivustoa.
+          </p>
+          <p>
+              Oppaassa hahmotellaan yleisperiaate, ei niinkään täydellinen malliratkaisu. 
+          </p>
+          <p>Opas jakaantuu seuraaviin vaiheisiin:</p>
+          <ul>
+            <li><a href="#lahto-oletukset">käydään läpi lähtöoletukset</a></li>
+            <li><a href="#alustus-cPanel">tehdään alustavat toimenpiteen Web-palvelimella</a></li>
+            <li><a href="#alustus-github">avataan uusi GitHub repository</a></li>
+            <li><a href="#uusi-laravel-projekti">luodaan kotikoneelle uusi Laravel-projekti</a></li>
+            <li><a href="#github-varmistus">varmistetaan, että tiedostot saadaan siirrettyä GitHub:iin</a></li>
+            <li><a href="#laravel-asennus-palvelimella">Laravelin asennus palvelimella</a></li>
+            <li><a href="#tietokanta-palvelimella">tietokannan asennus palvelimella</a></li>
+            <li><a href="#tietokanta-asetukset-omalla-koneella">tietokannan asennus omalle koneelle</a></li>
+            <li><a href="#tietokanta-asetusten-viimeistely-palvelimella">tietokanta-asetusten viimeistely palvelimella</a></li>
+            <li><a href="#loppusanat">loppusanat</a></li>
+          </ul>
+          <p>
+              Jokainen toimintaympäristö on erilainen, joten todennäköisesti jossain vaiheessa törmäät ongelmaan, jota oppaan esimerkissä ei käsitelty. 
+          </p>
+          <p>
+              Esimerkiksi itse jouduin loppuvaiheessa, kun palvelimella otetaan käyttöön tietokanta, tekemään muutoksen konfigurointietoihin, mutta en käy tätä muutosta läpi oppaassa, sillä samaa ongelma tuskin koskee kaikkia. 
+          </p>
+          <p>
+              Virheilmoituksen ja <a href="https://stackoverflow.com/" target="_blank">Stack Overflow:n</a> avulla ongelma ratkesi sangen nopeasti.
+          </p>
+
+            
+        </div>
+      </section>
+
+
+      <section class="padding-block-200 border-bottom">
+        <div class="container tutorial-text">
+
+
+            <h3 class="fs-600 fw-bold" id="lahto-oletukset">Lähtöoletukset</h3>
+
+            <p>Oppaan suorittaminen edellyttää, että:</p>
+            <ul>
+                <li>käytössäsi on <a href="https://cpanel.net/" target="_blank">cPanelia</a> tukeva Webhotelli</li>
+                <li>sinulla on <a href="https://github.com/" target="_blank">GitHub-tili</a></li>
+            </ul>
+            <p>Ja, että koneellesin on asennettu:</p>
+            <ul>
+                <li><a href="https://git-scm.com/" target="_blank">Git-versionhallintaohjelmisto</a></li>
+                <li>PHP:tä ja mySql:ää tukeva webpalvelin, esim. <a href="https://www.apachefriends.org/" target="_blank">Xampp</a></li>
+                <li>PHP:n versionhallintaohjelmisto <a href="https://getcomposer.org/" target="_blank">Composer</a></li>
+            </ul>
+            <p>Opimaalista olisi, jos kotikoneella ja webpalvelimella on käytössä sama PHP-versio, tällöin molemmille koneille asentuu automaattisesti sama Laravel-versio.</p>
+            
+            <p>
+              Työn edetessä kannattaa kirjata ylös tietoja, joita tulemme myöhemmissä vaiheissa tarvitsemaan.
+              <button onclick='displayNotes("V1")' class="notes_link">Muistiinpanot</button>-linkin avulla saat näkyville, mitä tietoja kussakin vaiheessa pitää olla selvillä.
+              Aukeavassa ikkunassa näytetään mallina arvot, joita minä käytin tätä opasta tehdessäni. 
+              Sinulla arvot tietekin ovat oman tehtäväsi mukaiset.
+            </p>
+
+            <p>Mikäli edellytykset ovat kunnossa, lähdetään liikkeelle suorittamalla cPanel:ssa tarvittavat ennakkovalmistelut.</p>
+            
+            <a href="#top_of_the_page">Takaisin sivun alkuun</a>
+        </div>
+      </section>
+
+      <section class="padding-block-200 border-bottom">
+        <div class="container tutorial-text">
+
+          <h3 id="alustus-cPanel" class="fs-600 fw-bold">cPanel</h3>
+
+          <p>Luodaan tätä projektia varten kaksi subdomainia.</p>
+          <p>Toiseen sijoitetaan Laravel-projektin tiedostot. Emme kuitenkaan paljasta tätä domainia kaiken kansan nähtäville, sillä samalla avautuisi yleiseen tietoon myös salaiseksi tarkoitettu <em>.env -tiedosto</em>. </p>
+          <p>Joten luodaan varsinaiselle julkaisulle oma subdomain, johon luomme myöhemmässä vaiheessa symbolisen linkin esitettävään sisältöön.</p>
+          <p>Luon projektia varten seuraavat subdomainit:</p>
+          <ul>
+              <li>graafeja <span class="text-accent-400">[Julkaisua varten]</span></li>
+              <li>graafitBackend <span class="text-accent-400">[Laravel:in asennusta varten]</span></li>
+          </ul>
+
+          <p>cPanelin pääsivun DOMAINS-välilehdeltä löytyy <em>Subdomains-painike</em>.</p>
+
+          <figure class="text-neutral-100 bg-primary-400">
+              <img class="display-in-modal" src="./images/cPanel-DOMAINS.png" alt="cPanel Domains-välilehti" />
+              <figcaption>cPanel Domains-välilehti.</figcaption>
+          </figure>
+
+          <p>Painike avaa Subdomains näkymän, joka sisältää lomakkeen, jonka avulla alidomaineja voidaan lisätä.</p>
+          <!-- Trigger the Modal -->
+          <figure class="text-neutral-100 bg-primary-400">
+              <img class="display-in-modal" src="./images/cPanel-addSubdomain.png" alt="Luodaan graafitBackend niminen alidomain ja sijoitetaan alidomainin tiedostot graafitBackend nimiseen alihakemistoon." />
+              <figcaption>Kuvan esimerkissä luodaan <em class="text-neutral-100">graafitBackend</em> niminen alidomain ja sijoitetaan alidomainin tiedostot <em class="text-neutral-100">graafitBackend</em> nimiseen alihakemistoon.</figcaption>
+          </figure>
+
+          <p>Kun subdomainit on lisätty, näkyvät ne Subdomains-sivun alalaidan listalla. (Minulla on jo entuudestaan pari muutakin subdomainia)</p>
+          <figure class="text-neutral-100 bg-primary-400">
+              <img class="display-in-modal" src="./images/cPanel-twoSubdoimains-added.png" alt="cPanel Subdomain listaus"/>
+              <figcaption>cPanel Subdomain listaus</figcaption>
+          </figure>
+
+          <p>Kun lisätään alidomain, niin tässä yhteydessä sille avataan oma hakemisto.</p>
+
+          <p>cPanelin etusivun Files-välilehden kautta pääsee tiedostonhallintaan. Käydään varmistamassa, että alidomaineja vastaavat hakemistot ovat olemassa.</p>
+
+          <figure class="text-neutral-100 bg-primary-400">
+            <img 
+              class="display-in-modal" 
+              src="./images/cPanel-filemanager-valilehti.png" 
+              alt="cPanel Filemanager-välilehti"
+            />
+            <figcaption>cPanel Filemanager-välilehti</figcaption>
+          </figure>   
+          
+          <p>public_html hakemistoon on lisätty subdomaineille omat kansionsa.</p>
+
+          <figure class="text-neutral-100 bg-primary-400">
+            <img 
+              class="display-in-modal" 
+              src="./images/cPanel-filemanager-folders_created.png" 
+              alt="Molemmille subdomaneille on lisätty oma hakemistonsa"
+            />
+            <figcaption>Molemmille subdomaneille on lisätty oma hakemistonsa.</figcaption>
+          </figure> 
+
+          <p>GitHub actionsin avulla tapahtuvaa päivittämistä varten tarvitaan FTP-tunnus. Luodaan se seuraavaksi. Tallennetaan samalla käyttäjätunnus ja salasana myöhempää käyttöä varten!</p>
+
+          <p><span class="text-accent-400">Hakemistoksi asetetaan polku Laravel-asennusta varten luotuun subdomainiin!</span></p>
+
+          <figure class="text-neutral-100 bg-primary-400">
+            <img 
+              class="display-in-modal" 
+              src="./images/cPanel-create-ftpAccount.png" 
+              alt="cPanel FTP-tunnuksen luonti"
+            />
+            <figcaption>cPanel FTP-tunnuksen luonti.</figcaption>
+          </figure> 
+
+          <p>Kun käyttäjä on luotu, ilmestyy nimi sivun alalaidassa esitettävään FTP-käyttäjien listaan.</p>
+          
+          <figure class="text-neutral-100 bg-primary-400">
+            <img 
+              class="display-in-modal" 
+              src="./images/cPanel-addFTPUserADDED.png" 
+              alt="Lisätty käyttäjä näkyy FTP-tunnusten listassa"
+            />
+            <figcaption>Lisätty käyttäjä näkyy FTP-tunnusten listassa.</figcaption>
+          </figure> 
+
+          <p>Kirjaa ylös lisäämäsi käyttäjätunnus ja salasana!
+
+          [<button onclick='displayNotes("V2")' class="notes_link">Muistiinpanot</button>]
+
+          </p>
+
+          <p>Siirrytään alkuvalmisteluissa seuraavaksi Githubin pariin.</p>
+
+          <a href="#top_of_the_page">Takaisin sivun alkuun</a>
+
+        </div>
+      </section>
+
+
+      <section class="padding-block-200 border-bottom">
+        <div class="container tutorial-text">
+          
+          <h3 id="alustus-github" class="fs-600 fw-bold">Github</h3>
+
+          <p>Luodaan tyhjä repository. <span class="text-accent-400">Huom! Tässä vaiheessa ei lisätä README.md tiedostoa.</span></p>
+          
+          <figure class="text-neutral-100 bg-primary-400">
+            <img 
+              class="display-in-modal" 
+              src="./images/github-create-new-repository.png" 
+              alt="Uuden Github repositoryn luonti"
+            />
+            <figcaption>Uuden Github repositoryn luonti.</figcaption>
+          </figure> 
+
+          <p>Kun repository on luotu, aukeaa näkymä, jossa listataan tyypillisiä vaihtoehtoja, joita tässä vaiheessa tehdään. Kopioidaan talteen seuraava kohta:</p>
+          
+          <figure class="text-neutral-100 bg-primary-400 display-on-mobile">
+            <img 
+              class="display-in-modal" 
+              src="./images/github-typical-options.png" 
+              alt="Omalla koneella olevan git-projektin tallettaminen luotuun repositoryyn."
+            />
+            <figcaption>Omalla koneella olevan git-projektin tallettaminen luotuun repositoryyn.</figcaption>
+          </figure> 
+          
+          <pre class="hide-on-mobile">
+…or push an existing repository from the command line
+git remote add origin https://github.com/RaimoHaikari/graafeja.git
+git branch -M main
+git push -u origin main</pre>
+        
+
+          <p>
+            <span class="text-accent-400">
+                Huom! Sinulla ensimmäisellä rivillä oleva sanan origin jälkeen lukeva osuus vastaa tietenkin sinun luomasi repositoryn nimeä.
+            </span>
+          </p>
+
+          <p>Talletetaan seuraavaksi webhotellin päivittämisen edellyttämät FTP-tiedot. Tämä tapahtuu <a href="https://docs.github.com/en/rest/actions/secrets" target="_blank">Actions secrets</a>-asetusten avulla. Pääsemme syöttämään ne kun valitsemme päävalikosta kohdan <em>Settings</em>, jonka jälkeen aukeavan sivun vasemman laidan valikosta valitaan ensin kohta <em>Secrets</em> ja tämän jälkeen alavalinta <em>Actions</em>.</p>
+
+          <figure class="text-neutral-100 bg-primary-400">
+            <img 
+              class="display-in-modal" 
+              src="./images/githubSettingsSecrets.png" 
+              alt="Github actions secrets -asetusten määrittäminen."
+            />
+            <figcaption>Github actions secrets -asetusten määrittäminen.</figcaption>
+          </figure> 
+          
+          <p id="github-secrets">Talletetaan kolme salaisuutta. <button onclick='displayNotes("V2")' class="notes_link">Muistiinpanot</button>.</p>
+
+          <ul>
+            <li>ftp_server <span class="text-accent-400">(Muistiinpanojen FTP -osoite)</span></li>
+            <li>ftp_username <span class="text-accent-400">(Muistiinpanojen Käyttäjä)</span></li>
+            <li>ftp_password <span class="text-accent-400">(Muistiinpanojen Salasana)</span></li>
+          </ul>
+
+          <p>Salaisuudet syötetään yksi kerrallaan.</p>
+
+          <figure class="text-neutral-100 bg-primary-400">
+            <img 
+              class="display-in-modal" 
+              src="./images/github-settings-actions-secrets-add.png" 
+              alt="FTP -palvelinta koskevan salaisuuden tallentaminen."
+            />
+            <figcaption>FTP -palvelinta koskevan salaisuuden tallentaminen.</figcaption>
+          </figure>
+
+          <p>Kun salaisuudet on syötetty, näkyvät ne sivun alalaidan listassa:</p>
+
+          <figure class="text-neutral-100 bg-primary-400">
+            <img 
+              class="display-in-modal" 
+              src="./images/githubSettingsSecretsADDED.png" 
+              alt="Lista talletetuista Github actions secrets -asetuksista."
+            />
+            <figcaption>Lista talletetuista Github actions secrets -asetuksista.</figcaption>
+          </figure>
+
+          <p class="text-accent-400">GitHub käyttää salaisuuksien nimissä isoja kirjaimia, mutta palvelinta päivittäessämme käytämme tallentamisen yhteydessä käytettyä muotoa.</p>
+
+          <p><a href="#top_of_the_page">Takaisin sivun alkuun</a></p>
+                
+        </div>
+      </section>
+
+      <section class="padding-block-200 border-bottom">
+        <div class="container tutorial-text">
+
+          <h3 id="uusi-laravel-projekti" class="fs-600 fw-bold">Kotikone</h3>
+
+          <p>Käynnistetään omalla koneella toimiva webpalvelin. Laravelin asennus ei edellytä, että palvelin on päällä, mutta pian sitä tarvitaan.</p>
+
+          <p>Laravel-projektin asentaminen edellyttää Composerin käyttöä, joten jos Composer ei ole jo asennettuna, voit ladata sen <a href="https://getcomposer.org/" target="_blank">täältä</a>.</p>
+
+          <p>Luodaan uusi Laravel projekti. <span class="text-accent-400">Nimeksi valitaan edellisessä vaiheessa luodun Github repositoryn nimi.</span></p>
+
+          <pre>
+composer create-project laravel/laravel graafeja
+</pre>
+
+          <p>Siirrytään luotuun hakemistoon ja tehdään siitä git-repository</p>
+
+          <pre>
+git init</pre>
+
+          <p>Lisätään tässä vaiheessa kaksi hakemistoa: ensiksi <em>.github</em> ja tämän hakemiston sisään: <em>workflows</em></p>
+
+          <p>workflows hakemiston sisään luodaan <em>actions.yml</em> niminen tiedosto. Tässä tiedostossa määritellään toimenpiteet, jotka GitHub:in halutaan suorittavan.</p>
+
+          <p>Projektin juuresta käsi hakemistolistauksen pitäisi näyttää suurin piirtein seuraavalta:</p>
+
+          <figure class="text-neutral-100 bg-primary-400">
+            <img 
+              class="display-in-modal" 
+              src="./images/myComputer-project-contents.png" 
+              alt="Hakemistolistaus lisättyjen hakemistojen jälkeen."
+            />
+            <figcaption>Hakemistolistaus lisättyjen hakemistojen jälkeen.</figcaption>
+          </figure>
+
+          <p>actions.yml tiedoston sisällöksi kopioidaan seuraava json -koodi:</p>
+
+          <pre class="hide-on-mobile">
+on: 
+  push:
+    branches: main
+name: 🚀 Deploy website on push
+jobs:
+  web-deploy:
+    name: 🎉 Deploy
+    runs-on: ubuntu-latest
+    steps:
+    - name: 🚚 Get latest code
+      uses: actions/checkout@v2
+    
+    - name: 📂 Sync files
+      uses: SamKirkland/FTP-Deploy-Action@4.3.1
+      with:
+        server: ${{ secrets.ftp_server }}
+        username: ${{ secrets.ftp_username }}
+        password: ${{ secrets.ftp_password }}</pre>
+
+          <figure class="text-neutral-100 bg-primary-400 display-on-mobile">
+            <img 
+              class="display-in-modal" 
+              src="./images/actions-script-sample.png" 
+              alt="Github Actions yleisskripti."
+            />
+            <figcaption>Github Actions yleisskripti.</figcaption>
+          </figure>
+
+          <p>Koodi on peräisin osoitteesta: <a href=" https://github.com/marketplace/actions/ftp-deploy" target="_blank">https://github.com/marketplace/actions/ftp-deploy</a>.</p>
+
+          <p>Kyseisellä sivulla esitellään automaattista, FTP:n avulla suoritettavaa päivitystä ja listataan tyypillisten käyttötilanteiden malleja.</p>
+
+          <p>Huomiota kannattaa kiinnittää koodinpätkän kolmeen viimeiseen riviin:</p>
+
+          <ul>
+            <li>secrets.ftp_server</li>
+            <li>secrets.ftp_username</li>
+            <li>secrets.ftp_password</li>
+          </ul>
+
+          <p>Ne vastaavat GitHub-repositoryn luomisen yhteydessä <a href="#github-secrets">tallennettuja salaisuuksia</a>.</p>
+
+          <p>Varmistetaan, että Laravelin asennus onnistui. Eli käynnistään kehityspalvelin ja todetaan selaimesta, että projektin oletussivu aukeaa selaimeen:</p>
+
+          <pre>
+php artisan serve</pre>
+
+          <p>Jonkan jälkeen selaimella osoitteesta http://localhost:8000/ pitäisi löytyä uuden Laravel-projektin avausikkuna.</p>
+          
+          <figure class="text-neutral-100 bg-primary-400">
+            <img 
+              class="display-in-modal" 
+              src="./images/localhost-laravel-running.png" 
+              alt="Uuden Laravel-projektin avausnäkymä."
+            />
+            <figcaption>Uuden Laravel-projektin avausnäkymä.</figcaption>
+          </figure>
+
+          <p>Kaiken pitäisi olla kotikoneella nyt kunnossa ja olemme valmiita tallettamaan tehdyt muutokset GitHub-repositoryyn.</p>
+
+          <p>Lisätään tehdyt muutokset committiin:</p>
+
+          <pre>
+git add .
+git commit -m 'Projektin avaus'</pre>
+
+          <p>Yhdistetään projekti GitHub repositoryyn:</p>
+
+          <pre>
+git remote add origin https://github.com/RaimoHaikari/graafeja.git</pre>
+
+          <p><span class="text-accent-400">Sinulla originin jälkeen tulevan osuuden pitää vastaa omaa repositoryasi!</span></p>
+
+          <p>Pushataan tehdyt muutokset GitHub:iin:</p>
+
+          <pre>
+git branch -M main
+git push -u origin main</pre>
+
+          <p><a href="#top_of_the_page">Takaisin sivun alkuun</a></p>
+
+        </div>
+      </section>
+
+
+
+      <section class="padding-block-200 border-bottom">
+        <div class="container tutorial-text">
+
+          <h3 id="github-varmistus" class="fs-600 fw-bold">Github</h3>
+
+          <p>Ensimmäisen päivityksen jälkeen projektin pääsivulle on ilmestynyt kopio projektin tiedostoista.</p>
+
+          <figure class="text-neutral-100 bg-primary-400">
+            <img 
+              class="display-in-modal" 
+              src="./images/github-repository-after-first-commit.png" 
+              alt="Kotikoneella olevat tiedostot on kopioitu Github repository:iin."
+            />
+            <figcaption>Kotikoneella olevat tiedostot on kopioitu Github repository:iin.</figcaption>
+          </figure>
+
+          <p>Jos kaikki meni hyvin, niin tovin kuluttua Actions -välilehdelle ilmestyy merkintä onnistuneesta ajosta. </p>
+
+
+          <figure class="text-neutral-100 bg-primary-400">
+            <img 
+              class="display-in-modal" 
+              src="./images/github-actions-after-first-commit.png" 
+              alt="Kotikoneella olevat tiedostot on kopioitu Github-repository:iin."
+            />
+            <figcaption>Kotikoneella olevat tiedostot on kopioitu Github repository:iin.</figcaption>
+          </figure>
+
+          <p>Vilkaistaan seuraavaksi miltä cPanelin puolella näyttää.</p>
+
+          <p><a href="#top_of_the_page">Takaisin sivun alkuun</a></p>
+
+        </div>
+      </section>
+
+
+      <section class="padding-block-200 border-bottom">
+        <div class="container tutorial-text">
+
+          <h3 id="laravel-asennus-palvelimella" class="fs-600 fw-bold">cPanel</h3>
+
+          <p>Jos vilkaisemme cPanelin tiedostolistausta, niin Laravel-tiedostoille varattuun hakemistoon on ilmestynyt koko joukko tiedostoja.</p>
+
+          <figure class="text-neutral-100 bg-primary-400">
+            <img 
+              class="display-in-modal" 
+              src="./images/cPanel-after-first-push.png" 
+              alt="Kotikoneella olevat tiedostot on kopioitu Webhotelliin."
+            />
+            <figcaption>Kotikoneella olevat tiedostot on kopioitu Webhotelliin</figcaption>
+          </figure>
+
+          <p>Tämä ei tarkoita vielä sitä, että Laravel-projekti olisi nyt nähtävissä. Vaikka tiedostot ovat jo paikalla, täytyy projekti erikseen asentaa vielä Webpalvelimella.</p>
+            
+          <p>Se puolestaan edellyttää komentokehotteella tapahtuvaa työskentelyä.</p>
+          
+          <p>Minulla cPanel:sta löytyy terminal ja aion käyttää sitä seuraavissa toimenpiteissä. Jos cPanel-versio ei sisällä terminaalia, niin samat tehtävät voi hoitaa esim. <a href="https://www.putty.org/" target="_blank">Putty:n</a> avulla.</p>
+            
+          <figure class="text-neutral-100 bg-primary-400">
+            <img 
+              class="display-in-modal" 
+              src="./images/cPanel-advanced-valilehti.png" 
+              alt="Terminaalin käynnistys cPanelissa."
+            />
+            <figcaption>Terminaalin käynnistys cPanelissa.</figcaption>
+          </figure>
+          
+          <p>Luodaan saman tien symbolinen linkki, jonka kautta Laravel-projekti on tarkoitus tarjota suuren yleisön nähtäville.</p>
+          
+          <p>Oppaan tapauksessa siirrytään graafeja-hakemistoon ja ajetaan seuraava käskyt:</p>
+          
+          <pre>
+cd public_html
+cd graafeja
+cp --symbolic-link ../graafitBackend/public/* .
+cp --symbolic-link ../graafitBackend/public/.htaccess .</pre>
+
+          <p>Kun hakemistossa tämän jälkeen tulostaa laajennetun tiedostolistauksen, pitäisi sen näyttää suunnilleen seuraavalta:</p>
+
+          <figure class="text-neutral-100 bg-primary-400">
+            <img 
+              class="display-in-modal" 
+              src="./images/cPanel-terminal-after-symlink.png" 
+              alt="Julkisen hakemiston tiedostolistaus."
+            />
+            <figcaption>Julkisen hakemiston tiedostolistaus.</figcaption>
+          </figure>
+
+          <p><span class="text-accent-400">Erinomaisen tärkeää on, että .htaccess -tiedosto näkyy listalla!</span></p>
+          
+          <p>Siirrytään seuraavaksi projektikansioon ja ajetaan Composerin asennuskomento.</p>
+
+          <pre>
+cd ..
+cd graafitBackend
+composer install</pre>
+          
+          <p>Kun asennus on valmis, pitää luoda <em>.env -tiedosto</em>. Käytetään apuna asennuksen mukana tulevaa <em>.env.example -tiedostoa</em>:</p>
+
+          <pre>
+cp .env.example .env</pre>
+          
+          <p>Luodaan "key":</p>
+
+          <pre>
+php artisan key:generate</pre>
+
+          <p>Jos kaikki on sujunut tähän asti mallikkaasti, niin Laravel-projekti on nyt nähtävissä julkiseksi tarkoitetun subdomainin kautta.</p>
+          
+          <p>Oppaan tapauksessa projekti on löytyy, kun selaimella menee osoitteeseen: <a target="_blank" href="http://graafeja.tahtisadetta.fi/">http://graafeja.tahtisadetta.fi</a></p>
+          
+          <figure class="text-neutral-100 bg-primary-400">
+            <img 
+              class="display-in-modal" 
+              src="./images/webhotel-laravel-running.png" 
+              alt="Uuden Laravel-projektin avausnäkymä webpalvelimella."
+            />
+            <figcaption>Uuden Laravel-projektin avausnäkymä webpalvelimella.</figcaption>
+          </figure>
+
+          <p><a href="#top_of_the_page">Takaisin sivun alkuun</a></p>
+                
+        </div>
+      </section>
+
+
+
+      <section class="padding-block-200 border-bottom">
+        <div class="container tutorial-text">
+
+          <h3 id="tietokanta-palvelimella" class="fs-600 fw-bold">Tietokanta</h3>
+
+          <p>On vielä yksi tärkeä tehtävä jäljellä, tietokantaan yhdistäminen. Suoritetaan aluksi Webhotellin päässä tarvittavat alkuvalmistelut.</p>
+
+          <p>cPanelin Databases-välilehdeltä pääsee luomaan tietokantoja.</p>
+
+          <figure class="text-neutral-100 bg-primary-400">
+            <img 
+              class="display-in-modal" 
+              src="./images/cPanel-databases-folder.png" 
+              alt="cPanelin tietokanta-asetukset."
+            />
+            <figcaption>cPanelin tietokanta-asetukset</figcaption>
+          </figure>
+
+          <p>Luodaan projektia varten uusi tietokanta.</p>
+
+          <figure class="text-neutral-100 bg-primary-400">
+            <img 
+              class="display-in-modal" 
+              src="./images/cPanel-add-new-Database.png" 
+              alt="Uuden tietokannan lisääminen cPanelissa."
+            />
+            <figcaption>Uuden tietokannan lisääminen cPanelissa.</figcaption>
+          </figure>
+
+          <p>Luomisen jälkeen tietokanta ilmestyy sivun alalaidassa esitettävään listaan. (Minulla oli entuudestaan jo pari tietokantaa.)</p>
+
+          <figure class="text-neutral-100 bg-primary-400">
+            <img 
+              class="display-in-modal" 
+              src="./images/cPanel-new-database-added.png" 
+              alt="Uusi tietokanta on lisätty."
+            />
+            <figcaption>Uusi tietokanta on lisätty.</figcaption>
+          </figure>
+
+          <p>Luodaan kantaa varten myös uusi käyttäjä.</p>
+
+          <figure class="text-neutral-100 bg-primary-400">
+            <img 
+              class="display-in-modal" 
+              src="./images/cPanel-add_new-db_user.png" 
+              alt="Uuden tietokantakäyttäjän lisääminen cPanel:ssa."
+            />
+            <figcaption>Uuden tietokantakäyttäjän lisääminen cPanel:ssa.</figcaption>
+          </figure>
+
+          <p>Kytketään lisätty käyttäjä projektin tietokantaan.</p>
+
+          <figure class="text-neutral-100 bg-primary-400">
+            <img 
+              class="display-in-modal" 
+              src="./images/cPanel-map_DB-and-USER.png" 
+              alt="Uuden tietokantakäyttäjän lisääminen cPanel:ssa."
+            />
+            <figcaption>Luodun käyttäjän yhdistäminen tietokantaan.</figcaption>
+          </figure>
+
+          <p>Aukeavassa näkymässä annetaan käyttäjälle täydet oikeudet tietokantaan.</p>
+
+          <figure class="text-neutral-100 bg-primary-400">
+            <img 
+              class="display-in-modal" 
+              src="./images/cPanel-db-user-priviledges.png" 
+              alt="Annetaan käyttäjälle täydet oikeudet valittuun tietokantaan."
+            />
+            <figcaption>Annetaan käyttäjälle täydet oikeudet valittuun tietokantaan.</figcaption>
+          </figure>
+
+          <p>Kirjaa ylös juuri määrittämäsi tiedot. <button onclick='displayNotes("V3")' class="notes_link">Muistiinpanot</button></p>
+
+          <p>Seuraavaksi tietokantayhteyttä koskevat tiedot on tallennettava .env -tiedostoon.</p>
+
+          <p>Minä käytän cPanelin tiedostonhallinnan edit-toimintoa. Tehtävä voidaan hoitaa myös esim. <a href="https://en.wikipedia.org/wiki/Vi" target="_blank">vi-editorilla</a>. </p>
+
+          <p>Etsitään tiedostosta tietokantayhteyttä koskeva kohta ja talletetaan luotua tietokantaa ja käyttäjää koskevat tiedot.<button onclick='displayNotes("V3")' class="notes_link">Muistiinpanot</button></p>
+          
+          <figure class="text-neutral-100 bg-primary-400">
+            <img 
+              class="display-in-modal" 
+              src="./images/cPanel-update_env-file.png" 
+              alt="Tietokanta-asetusten määrittäminen .env -tiedostossa."
+            />
+            <figcaption>Tietokanta-asetusten määrittäminen .env -tiedostossa.</figcaption>
+          </figure>
+
+          <p>cPanelin Databases välilehdeltä voi avata phpMyAdmin -ikkunan. Lisätty tietokanta näkyy ikkunassa (toistaiseksi) tyhjänä tietokantana.</p>
+
+          <figure class="text-neutral-100 bg-primary-400">
+            <img 
+              class="display-in-modal" 
+              src="./images/cPanel-phpAdmin-db-added.png" 
+              alt="Luotu tietokanta nähtynä phpMyAdmin sovelluksen kautta."
+            />
+            <figcaption>Luotu tietokanta nähtynä phpMyAdmin sovelluksen kautta.</figcaption>
+          </figure>
+          
+          <p><a href="#top_of_the_page">Takaisin sivun alkuun</a></p>
+                
+        </div>
+      </section>
+
+      <section class="padding-block-200 border-bottom">
+        <div class="container tutorial-text">
+                
+          <h3 id="tietokanta-asetukset-omalla-koneella" class="fs-600 fw-bold">Tietokanta omalla koneella</h3>
+
+          <p>Palataan omalle koneelle ja luodaan myös sinne tietokanta. Vaiheet ovat samanlaiset kuin juuri äsken tehtiin palvelimella. Kotikoneella ei todennäköisesti ole cPanelia, mutta jos käytössä on Xampp, niin avaamalla selaimeen uusi välilehti ja kirjoittamalla osoitteeksi:</p>
+
+          <pre>
+http://localhost/dashboard/</pre>
+
+          <p>Aukeaa Xampp:in porttaalisivu, jonka oikeassa ylälaidassa on linkki <em>phpMyAdmin</em>.</p>
+
+          <figure class="text-neutral-100 bg-primary-400">
+            <img 
+              class="display-in-modal" 
+              src="./images/localhost-xampp-portal.png" 
+              alt="Xampp:n porttaalisivu."
+            />
+            <figcaption>Xampp:n porttaalisivu.</figcaption>
+          </figure>
+
+          <p>Linkin takaa aukeaa tuttu SQL-hallintapaneeli.</p>
+
+          <figure class="text-neutral-100 bg-primary-400">
+            <img 
+              class="display-in-modal" 
+              src="./images/localhost-phpMyAdmin.png" 
+              alt="SQL-hallintapaneeli."
+            />
+            <figcaption>SQL-hallintapaneeli.</figcaption>
+          </figure>
+
+          <p>Tietokanta saadaan luotua esim. klikkaamalla SQL-välilehteä. Ja syöttämällä SQL-komennoille varattuun tilaan:</p>
+
+          <pre>
+CREATE DATABASE tahti885_db_graafeja;</pre>
+
+          <p>ja painamalla GO-painiketta.</p>
+
+          <figure class="text-neutral-100 bg-primary-400">
+            <img 
+              class="display-in-modal" 
+              src="./images/localhost-phpAdmin-sql.png" 
+              alt="Uuden tietokannan luominen phpMyAdminin SQL-hallintapaneelissa."
+            />
+            <figcaption>Uuden tietokannan luominen phpMyAdminin SQL SQL-hallintapaneelissa.</figcaption>
+          </figure>
+
+          <p>Tällä kertaa luon omalle koneelle samanlaisilla asetuksilla tietokannan käyttäjineen kuin edellisessä vaiheessa tein palvelimelle.</p>
+          
+          <p>Mutta sinänsä omalla koneella ja palvelimella olevien tietokanta-asetusten ei tarvitse olla identtisiä, sillä Laravel-instanssin käyttämän .env -tiedoston sisältö ratkaisee kulloinkin voimassa olevat tietokanta-asetukset. </p>
+          
+          <p>Sen jälkeen kun myös kotikoneen <em>.env -tiedostoa</em> on muokattu, kannattaa Laravel-prosessi käynnistää uudelleen.</p>
+
+          <p>Eli painetaan <em>CTRL + c</em></p>
+
+          <p>Jonka jälkeen ajetaan komento:</p>
+
+          <pre>
+php artisan serve</pre>
+
+          <p>Laravel asennuksen mukana tulee harjoittelua varten valmius luoda yksinkertainen käyttäjätietokanta. Se saadaan käyttöö kirjoittamalla seuraava komento:</p>
+
+          <pre>
+php artisan migrate</pre>
+
+          <p>Kun tehtävä on suoritettu ja phpMyAdmin-ikkunassa valitaan juuri äsken luotu tietokanta, niin sen sisälle on ilmestynyt joukko tietokantatauluja:</p>
+
+          <figure class="text-neutral-100 bg-primary-400">
+            <img 
+              class="display-in-modal" 
+              src="./images/localhost-phpAdmin-users-created.png" 
+              alt="Laravel tietokantaan on ilmestynyt tauluja."
+            />
+            <figcaption>Laravel tietokantaan on ilmestynyt tauluja.</figcaption>
+          </figure>
+
+          <p>Luodaan yksi käyttäjä. Se voidaan tehdä esim. seuraavilla komennoilla:</p>
+
+          <pre>
+php artisan tinker</pre>
+
+          <p>Tämä avaa Psy Shell:in. Syötetään siihen seuraava koodinpätkä:</p>
+
+          <pre>
+User::factory()->create()</pre>
+
+          <figure class="text-neutral-100 bg-primary-400">
+            <img 
+              class="display-in-modal" 
+              src="./images/vscode-psyShell.png" 
+              alt="Testikäyttäjän lisääminen Psy Shellissä."
+            />
+            <figcaption>Testikäyttäjän lisääminen Psy Shellissä.</figcaption>
+          </figure>
+
+          <p>Psy Shellin saa suljettua kirjoittamalla komentokehotteeseen exit.</p>
+
+          <p>Jos nyt avaa phpMyAdminissa users-taulun, niin siellä pitäisi olla yksi käyttäjä!</p>
+
+
+          <figure class="text-neutral-100 bg-primary-400">
+            <img 
+              class="display-in-modal" 
+              src="./images/localhost-phpMyAdmin-one-user-added-upd.png" 
+              alt="Lisätty käyttäjä näkyy phpMyAdmin-ikkunassa."
+            />
+            <figcaption>Lisätty käyttäjä näkyy phpMyAdmin-ikkunassa.</figcaption>
+          </figure>
+
+          <p>Muokataan hieman Laravel:in web.php-tiedostoa. Se löytyy kansiosta: routes.</p>
+
+          <p>Lisätään uusi route, joka tulostaa tietokantaan talletettujen käyttäjien määrän:</p>
+
+          <pre>
+Route::get('/users', function () {
+
+    $users = App\Models\User::all();
+    return "&lt;p&gt;Käyttäjiä on yhteensä: ".count($users)." kpl&lt;/p&gt;";
+
+});</pre>
+
+          <p>Tiedoston pitäisi siis näyttää seuraavalta:</p>
+
+          <figure class="text-neutral-100 bg-primary-400">
+            <img 
+              class="display-in-modal" 
+              src="./images/vscode-routes-routeAdded.png" 
+              alt="Muokattu web.php-tiedosto."
+            />
+            <figcaption>Muokattu web.php-tiedosto.</figcaption>
+          </figure>
+
+          <p>Kun selaimella mennään osoitteeseen: http://localhost:8000/users, niin aukeava sivu kertoo, että tietokannassa on yksi käyttäjä.</p>
+
+          <figure class="text-neutral-100 bg-primary-400">
+            <img 
+              class="display-in-modal" 
+              src="./images/localhost-route-users.png" 
+              alt="Muokattu web.php-tiedosto."
+            />
+            <figcaption>Muokattu web.php-tiedosto.</figcaption>
+          </figure>
+
+          <p>Kotikoneella tietokantayhteys on nyt saatu toimimaan.</p>
+
+          <p>Talletetaan päivitykset Github-repositoryyn. Kun käytössä on Github-actions, niin samalla päivittyy myös Webhotellin puolella ajettava Laravel-instanssi.</p>
+
+          <p>Komento sanan toistuva käyttö alkaa ärsyttämään, vaihdetaan lähestymistapaa ja esitetään versionhallinnalle seuraavat toivomukset:</p>
+
+          <pre>
+git add .
+git commit -m "Tietokanta otettu käyttöön"
+git push</pre>
+
+          <p><a href="#top_of_the_page">Takaisin sivun alkuun</a></p>
+
+        </div>
+      </section>
+
+
+      <section class="padding-block-200 border-bottom">
+        <div class="container tutorial-text">
+
+          <h3 id="tietokanta-asetusten-viimeistely-palvelimella" class="fs-600 fw-bold">Loppuhuipentuma</h3>
+
+          <p>Jos nyt vilkaistaan miltä Github-repositoryn Actions välilehdellä näyttää, niin kohtaan All workflows on ilmestynyt uusi merkintä.</p>
+
+          <figure class="text-neutral-100 bg-primary-400">
+            <img 
+              class="display-in-modal" 
+              src="./images/github-actions-databaseAdded.png" 
+              alt="Github actions -listalle on ilmestynyt uusi merkintä."
+            />
+            <figcaption>Github actions -listalle on ilmestynyt uusi merkintä.</figcaption>
+          </figure>
+
+          <p>Nyt ollaan jo melkein maalissa.</p>
+
+          <p>Jotta tietokanta tulisi alustetuksi myös Webhotellin puolella, pitää terminaalissa ajaa samat komennot, kuin omalla koneella suoritettiin tietokantaa alustettaessa, eli:</p>
+          
+          <pre>
+php artisan migrate</pre>
+          
+          <p>...mutta luodaankin palvelimelle 10 käyttäjää:</p>
+
+          <pre>
+php artisan tinker</pre>
+
+          <p>Ja Psy -editorissa:</p>
+
+          <pre>
+User::factory()->count(10)->create()
+Exit</pre>
+
+          <p>Kun tämän jälkeen avaamme käyttäjien määrän ilmoittavan sivun, niin näemme viestin, joka kertoo tietokantaan lisättyjen käyttäjien määrän.</p>
+        
+          <figure class="text-neutral-100 bg-primary-400">
+            <img 
+              class="display-in-modal" 
+              src="./images/webhotel-laravel-dbInUse.png" 
+              alt="Webpalvelimella toimiva käyttäjien määrän ilmoittava sivu."
+            />
+            <figcaption>Webpalvelimella toimiva käyttäjien määrän ilmoittava sivu.</figcaption>
+          </figure>
+
+          <p><a href="#top_of_the_page">Takaisin sivun alkuun</a></p>
+
+            <!-- T E X T  M O D A L -->
+          <div id="lgc-textModal" class="textModal">
+
+            <!-- Modal content -->
+            <div class="textModal-content text-neutral-100">
+              <span class="textModal-close">&times;</span>
+              <p class="fw-bold">FTP -address:<span class="margin-left fw-regular with-letter-spacing" id="ftp-address-value"></span></p>
+              <p class="fw-bold">FTP -username:<span class="margin-left fw-regular with-letter-spacing" id="ftp-username-value"></span></p>
+              <p class="fw-bold">FTP -password:<span class="margin-left fw-regular with-letter-spacing" id="ftp-password-value"></span></p>
+
+              <p class="fw-bold">DB_DATABASE:<span class="margin-left fw-regular with-letter-spacing" id="db-database-value"></span></p>
+              <p class="fw-bold">DB_USERNAME:<span class="margin-left fw-regular with-letter-spacing" id="db-user-value"></span></p>
+              <p class="fw-bold">DB_PASSWORD:<span class="margin-left fw-regular with-letter-spacing" id="db-password-value"></span></p>
+            </div>
+
+          </div>
+                
+        </div>
+      </section>
+
+
+      <section class="padding-block-200 border-bottom">
+        <div class="container tutorial-text">
+
+          <h3 id="loppusanat" class="fs-600 fw-bold">Loppusanat</h3>
+
+          <p>
+              Vaikka tämä opas päästiin nyt loppuun, niin matka on vasta alussa. 
+              Seuraavaksi voi tutustua vaikka Actions skriptien tarjoamiin mahdollisuuksiin.
+              Skriptiä hiomalla on mahdollista vähentää tarvittavaa terminaali työskentelyä. 
+              Vinkkejä löytyy esimerkiksi <a href="https://stackoverflow.com/questions/70996923/is-that-possible-to-deploy-laravel-web-application-to-shared-hosting-using-githu" target="_blank">täältä</a>.
+          </p>
+
+          <p><a href="#top_of_the_page">Takaisin sivun alkuun</a></p>
+
+        </div>
+      </section>
+
+    </main>
+
+
+    <footer class="primary-footer padding-block-700 bg-neutral-900 text-neutral-100">
+      <div class="container">
+        <div class="even-columns">
+
+          <div  class="primary-footer-logos">
+
+            <a href="#" aria-label="home">
+              <svg class="logo">
+                <use xlink:href="./images/sitelogo-sprite.svg#sitelogo"></use>
+              </svg>
+            </a>
+
+            <ul class="social-list" role="list" aria-label="social links">
+              <li>
+                <a aria-label="instagram" href="https://www.instagram.com/raimohaikari/" target="_blank">
+                  <svg class="social-icon">
+                    <use xlink:href="./images/social-media-ig-git.svg#icon-instagram-use"></use>
+                  </svg>
+                </a>
+              </li>
+              <li>
+                <a aria-label="github" href="https://github.com/RaimoHaikari" target="_blank">
+                  <svg class="social-icon">
+                    <use xlink:href="./images/social-media-ig-git.svg#icon-github"></use>
+                  </svg>
+                </a>
+              </li>
+            </ul>
+
+          </div>
+
+          <div class="copy-right-container">
+            <p>Copyright 2022. All Rights Reserved</p>
+          </div>
+
+
+        </div>
+      </div>
+    </footer>
+
+	  <!-- <script src="./main.js"></script> -->
+    <script src="./modal.js"></script>
+    <script src="./textModal.js"></script>
+  </body>
+</html>
+
+
