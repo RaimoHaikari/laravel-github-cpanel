@@ -1,5 +1,5 @@
 // vite.config.js
 export default {
     // config options
-    base: '/laravel-github-cpanel/'
+    //base: '/laravel-github-cpanel/'
 }

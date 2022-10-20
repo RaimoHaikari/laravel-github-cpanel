@@ -99,7 +99,7 @@ window.onclick = function(event) {
   }
 }
 
-function displayNotes(obj){
+window.displayNotes = function(obj){
 
   console.log(obj)
 
